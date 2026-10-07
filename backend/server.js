@@ -60,7 +60,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight requests
+app.options(/(.*)/, cors(corsOptions)); // Handle preflight for all routes (Express v5 compatible)
 
 // ─── Webhook route (BEFORE express.json — Stripe needs raw body) ──────────────
 app.use('/api/webhooks', webhookRoutes);
