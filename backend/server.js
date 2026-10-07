@@ -10,8 +10,8 @@ import connectDB from './config/db.js';
 // Load env vars
 dotenv.config();
 
-// Connect to database
-connectDB();
+// Connect to database (non-blocking in serverless)
+connectDB().catch((err) => console.error('DB connection failed:', err.message));
 
 const app = express();
 
