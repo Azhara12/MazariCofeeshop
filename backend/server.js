@@ -1,3 +1,7 @@
+import dns from "dns";
+
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -12,10 +16,39 @@ connectDB();
 const app = express();
 
 // Enable CORS
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true
-}));
+// Allow: localhost dev, any *.vercel.app subdomain, and FRONTEND_URL env var
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, curl)
+    if (!origin) return callback(null, true);
+
+    const allowedPatterns = [
+      /^https?:\/\/localhost(:\d+)?$/,           // localhost any port
+      /^https:\/\/.*\.vercel\.app$/,             // any *.vercel.app
+    ];
+
+    // Also allow explicit FRONTEND_URL if set
+    if (process.env.FRONTEND_URL) {
+      try {
+        allowedPatterns.push(new RegExp(`^${process.env.FRONTEND_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
+      } catch (_) {}
+    }
+
+    const isAllowed = allowedPatterns.some((pattern) => pattern.test(origin));
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.warn(`[CORS] Blocked origin: ${origin}`);
+      callback(new Error(`CORS: Origin ${origin} not allowed`));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight for all routes
 
 // Webhook route MUST be before express.json() because Stripe needs the raw body
 import webhookRoutes from './routes/webhookRoutes.js';
@@ -41,7 +74,7 @@ app.use('/api/admin', adminRoutes);
 
 // Root route
 app.get('/', (req, res) => {
-  res.send('API is running...');
+  res.send('MazariCS API is running...');
 });
 
 // Error handling middleware
@@ -49,13 +82,13 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 app.use(notFound);
 app.use(errorHandler);
 
-// Local development ke liye port listener
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
+
+// Only listen when not in Vercel serverless environment
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
   });
 }
 
-// Vercel serverless function ke liye app export karna zaroori hai
 export default app;
