@@ -159,7 +159,7 @@ const AdminDashboard = () => {
     <div className="space-y-8 animate-fadeInUp">
 
       {/* ── Page Header ────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-serif font-bold text-black">Dashboard</h1>
           {lastUpdated && (
@@ -169,7 +169,7 @@ const AdminDashboard = () => {
             </p>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => exportCSV(orders)}
             disabled={orders.length === 0}

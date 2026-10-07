@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
-import { LayoutDashboard, ShoppingCart, Package, Users, LogOut, Coffee, Settings, ArrowLeft, Bell } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { LayoutDashboard, ShoppingCart, Package, Users, LogOut, Coffee, Settings, ArrowLeft, Bell, Menu, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const AdminLayout = ({ children, activeAdminTab, setActiveAdminTab, setActiveTab }) => {
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -41,22 +42,40 @@ const AdminLayout = ({ children, activeAdminTab, setActiveAdminTab, setActiveTab
 
   return (
     <div className="min-h-screen bg-stone-50 flex">
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
 
       {/* ── Sidebar ───────────────────────────────────────────────────────────── */}
-      <aside className="w-64 bg-white border-r border-stone-200 flex flex-col fixed h-full z-10">
+      <aside className={`w-64 bg-white border-r border-stone-200 flex flex-col fixed h-full z-50 transition-transform duration-300 lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         
         {/* Brand */}
-        <div
-          className="p-6 flex items-center gap-3 cursor-pointer group"
-          onClick={() => setActiveAdminTab('dashboard')}
-        >
-          <div className="bg-[#C68B45] text-white p-2 rounded-xl group-hover:scale-105 transition-transform">
-            <Coffee className="w-5 h-5" />
+        <div className="p-6 flex items-center justify-between">
+          <div
+            className="flex items-center gap-3 cursor-pointer group"
+            onClick={() => {
+              setActiveAdminTab('dashboard');
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            <div className="bg-[#C68B45] text-white p-2 rounded-xl group-hover:scale-105 transition-transform">
+              <Coffee className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold font-serif text-black">MazariCS</h1>
+              <p className="text-[10px] font-semibold text-stone-500 uppercase tracking-wider">Admin Panel</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg font-bold font-serif text-black">MazariCS</h1>
-            <p className="text-[10px] font-semibold text-stone-500 uppercase tracking-wider">Admin Panel</p>
-          </div>
+          <button 
+            className="lg:hidden p-2 text-stone-500 hover:text-black rounded-lg"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -67,7 +86,10 @@ const AdminLayout = ({ children, activeAdminTab, setActiveAdminTab, setActiveTab
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveAdminTab(item.id)}
+                onClick={() => {
+                  setActiveAdminTab(item.id);
+                  setIsMobileMenuOpen(false);
+                }}
                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer ${
                   isActive
                     ? 'bg-[#C68B45] text-white shadow-md'
@@ -108,17 +130,25 @@ const AdminLayout = ({ children, activeAdminTab, setActiveAdminTab, setActiveTab
       </aside>
 
       {/* ── Main Content ──────────────────────────────────────────────────────── */}
-      <div className="flex-1 ml-64 flex flex-col min-h-screen">
+      <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
 
         {/* Top Header */}
-        <header className="bg-white border-b border-stone-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-          <div>
-            <h2 className="text-xl font-serif font-bold text-black capitalize">
-              {activeAdminTab}
-            </h2>
-            <p className="text-xs text-stone-400 mt-0.5">
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-            </p>
+        <header className="bg-white border-b border-stone-200 px-4 md:px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+          <div className="flex items-center gap-4">
+            <button 
+              className="lg:hidden p-2 text-stone-500 hover:text-black bg-stone-100 rounded-xl"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div>
+              <h2 className="text-xl font-serif font-bold text-black capitalize">
+                {activeAdminTab}
+              </h2>
+              <p className="text-xs text-stone-400 mt-0.5 hidden sm:block">
+                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
@@ -145,7 +175,7 @@ const AdminLayout = ({ children, activeAdminTab, setActiveAdminTab, setActiveTab
         </header>
 
         {/* Dynamic Page Content */}
-        <main className="flex-1 p-8 bg-stone-50">
+        <main className="flex-1 p-4 md:p-8 bg-stone-50 overflow-x-hidden">
           {children}
         </main>
       </div>

@@ -63,21 +63,21 @@ const Hero = ({ setActiveTab }) => {
         </div>
 
         {/* Visual Content */}
-        <div className="relative animate-fadeInUp delay-300 hidden lg:block">
+        <div className="relative animate-fadeInUp delay-300 mt-12 lg:mt-0 w-full max-w-lg mx-auto lg:max-w-none">
           <div className="absolute inset-0 bg-[#C68B45]/10 rounded-full blur-3xl animate-pulse" />
           <img 
-            src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800" 
-            alt="Barista pouring latte art" 
-            className="relative z-10 w-full h-[600px] object-cover rounded-[3rem] shadow-2xl animate-floatSlow"
+            src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=1200" 
+            alt="Premium coffee brewing" 
+            className="relative z-10 w-full h-[400px] sm:h-[500px] lg:h-[600px] object-cover rounded-[2rem] lg:rounded-[3rem] shadow-2xl animate-floatSlow"
           />
           {/* Floating Badge */}
-          <div className="absolute bottom-10 -left-10 z-20 glass p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-float" style={{ animationDelay: '1s' }}>
-            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-              <span className="text-2xl">🌱</span>
+          <div className="absolute -bottom-6 -left-4 sm:bottom-10 sm:-left-10 z-20 glass p-3 sm:p-4 rounded-2xl shadow-xl flex items-center gap-3 sm:gap-4 animate-float bg-white/80 backdrop-blur-md border border-white/40" style={{ animationDelay: '1s' }}>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+              <span className="text-xl sm:text-2xl">🌱</span>
             </div>
             <div>
-              <p className="text-sm font-bold text-[#3D2817]">100% Organic</p>
-              <p className="text-xs text-stone-500">Ethically sourced beans</p>
+              <p className="text-xs sm:text-sm font-bold text-[#3D2817]">100% Organic</p>
+              <p className="text-[10px] sm:text-xs text-stone-500">Ethically sourced beans</p>
             </div>
           </div>
         </div>
