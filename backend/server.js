@@ -1,8 +1,3 @@
-import dns from "dns";
-
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
-
-
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -29,7 +24,7 @@ app.use('/api/webhooks', webhookRoutes);
 // Body parser
 app.use(express.json());
 
-// Mount routers (we will create these shortly)
+// Mount routers
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -54,8 +49,13 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+// Local development ke liye port listener
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-});
+// Vercel serverless function ke liye app export karna zaroori hai
+export default app;
